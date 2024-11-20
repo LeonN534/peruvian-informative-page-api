@@ -19,7 +19,7 @@ export class Commentary {
   @CreateDateColumn()
   creationDate: Date;
 
-  @Column('int')
+  @Column('int', { default: 0 })
   votes: number;
 
   @Column({

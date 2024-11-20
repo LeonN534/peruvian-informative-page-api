@@ -11,9 +11,4 @@ export class CreateCommentaryDto {
   @Trim()
   @IsEnum(Topics)
   topic: Topics;
-
-  @IsString()
-  @Trim()
-  @IsNotEmpty()
-  userId: string;
 }

@@ -66,11 +66,12 @@ export class AuthService {
   async findOneUser(uuid: string) {
     const user = await this.userRepository.findOne({
       where: { id: uuid },
+      relations: ['commentaries'],
     });
 
     if (!user)
       throw new BadRequestException(
-        `El usuario con el código ${uuid} no existe.`,
+        `User with id ${uuid} does not exist in the database.`,
       );
 
     return {

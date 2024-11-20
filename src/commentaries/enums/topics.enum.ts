@@ -1,1 +1,4 @@
-export enum Topics {}
+export enum Topics {
+  SPORTS = 'sports',
+  POLITICS = 'politics',
+}
