@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateCommentaryDto } from './dto/create-commentary.dto';
 import { UpdateCommentaryDto } from './dto/update-commentary.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -37,8 +41,32 @@ export class CommentariesService {
     return `This action returns a #${topic} commentary`;
   }
 
-  updateComentary(id: number, updateCommentaryDto: UpdateCommentaryDto) {
-    return `This action updates a #${id} commentary`;
+  async updateComentary(
+    id: number,
+    updateCommentaryDto: UpdateCommentaryDto,
+    jwt: string,
+  ) {
+    if (!id) throw new BadRequestException('Commentary id is required');
+
+    const user = await this.authService.getValidatedUser(jwt);
+    const commentary = await this.commentariesRepository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
+
+    if (!commentary) throw new BadRequestException('Commentary not found');
+
+    if (commentary.user.id !== user.id)
+      throw new UnauthorizedException('This commentary is not yours');
+
+    commentary.content = updateCommentaryDto.content;
+    await this.commentariesRepository.save(commentary);
+
+    return {
+      status: 201,
+      error: null,
+      success: true,
+    };
   }
 
   removeComentary(id: number) {

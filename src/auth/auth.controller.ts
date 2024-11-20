@@ -21,7 +21,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard())
   @Get('validate-jwt')
-  validateJwt(@GetUser('id') userId: string) {
+  validateJwt(@GetUser() userId: string) {
     return this.authService.validateJwt(userId);
   }
 }

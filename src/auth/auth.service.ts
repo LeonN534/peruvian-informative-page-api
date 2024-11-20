@@ -123,7 +123,6 @@ export class AuthService {
   async validateJwt(userId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['address'],
     });
 
     if (!user)
@@ -137,5 +136,28 @@ export class AuthService {
       success: true,
       data: user,
     };
+  }
+
+  async getValidatedUser(jwt: string) {
+    if (!jwt) throw new UnauthorizedException('Not authorized');
+
+    if (jwt.startsWith('Bearer ')) jwt = jwt.slice(7, jwt.length);
+
+    try {
+      const payload = await this.jwtService.verifyAsync(jwt);
+      if (!payload) throw new UnauthorizedException('Not authorized');
+
+      const userId = payload.sub;
+      const user = await this.userRepository.findOne({
+        where: { id: userId },
+      });
+
+      if (!user) throw new UnauthorizedException('Not authorized');
+
+      return user;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      throw new UnauthorizedException('Not authorized');
+    }
   }
 }

@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Headers,
 } from '@nestjs/common';
 import { CommentariesService } from './commentaries.service';
 import { CreateCommentaryDto } from './dto/create-commentary.dto';
@@ -22,7 +23,7 @@ export class CommentariesController {
   @Post()
   createComentary(
     @Body() createCommentaryDto: CreateCommentaryDto,
-    @GetUser('id') userId: string,
+    @GetUser() userId: string,
   ) {
     return this.commentariesService.createComentary(
       createCommentaryDto,
@@ -39,8 +40,13 @@ export class CommentariesController {
   updateComentary(
     @Param('id') id: string,
     @Body() updateCommentaryDto: UpdateCommentaryDto,
+    @Headers('Authorization') jwt: string,
   ) {
-    return this.commentariesService.updateComentary(+id, updateCommentaryDto);
+    return this.commentariesService.updateComentary(
+      +id,
+      updateCommentaryDto,
+      jwt,
+    );
   }
 
   @Delete(':id')
