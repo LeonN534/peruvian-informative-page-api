@@ -8,13 +8,14 @@ import { User } from './entities/user.entity';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { TokenService } from './token.service';
+import { InstructiveEmail } from './entities/instructive-email.entity';
 
 @Module({
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, TokenService],
   imports: [
     ConfigModule,
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, InstructiveEmail]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
