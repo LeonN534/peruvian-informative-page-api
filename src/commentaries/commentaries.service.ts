@@ -69,7 +69,30 @@ export class CommentariesService {
     };
   }
 
-  removeComentary(id: number) {
-    return `This action removes a #${id} commentary`;
+  async removeComentary(
+    id: number,
+    updateCommentaryDto: UpdateCommentaryDto,
+    jwt: string,
+  ) {
+    if (!id) throw new BadRequestException('Commentary id is required');
+
+    const user = await this.authService.getValidatedUser(jwt);
+    const commentary = await this.commentariesRepository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
+
+    if (!commentary) throw new BadRequestException('Commentary not found');
+
+    if (commentary.user.id !== user.id)
+      throw new UnauthorizedException('This commentary is not yours');
+
+    await this.commentariesRepository.remove(commentary);
+
+    return {
+      status: 204,
+      error: null,
+      success: true,
+    };
   }
 }

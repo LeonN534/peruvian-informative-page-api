@@ -50,7 +50,15 @@ export class CommentariesController {
   }
 
   @Delete(':id')
-  removeComentary(@Param('id') id: string) {
-    return this.commentariesService.removeComentary(+id);
+  removeComentary(
+    @Param('id') id: string,
+    @Body() updateCommentaryDto: UpdateCommentaryDto,
+    @Headers('Authorization') jwt: string,
+  ) {
+    return this.commentariesService.removeComentary(
+      +id,
+      updateCommentaryDto,
+      jwt,
+    );
   }
 }
