@@ -8,12 +8,14 @@ import {
   Delete,
   UseGuards,
   Headers,
+  Query,
 } from '@nestjs/common';
 import { CommentariesService } from './commentaries.service';
 import { CreateCommentaryDto } from './dto/create-commentary.dto';
 import { UpdateCommentaryDto } from './dto/update-commentary.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Controller('commentaries')
 export class CommentariesController {
@@ -32,8 +34,14 @@ export class CommentariesController {
   }
 
   @Get(':topic')
-  findComentariesByTopic(@Param('topic') topic: string) {
-    return this.commentariesService.findComentariesByTopic(topic);
+  findComentariesByTopic(
+    @Param('topic') topic: string,
+    @Query() paginationDto: PaginationDto,
+  ) {
+    return this.commentariesService.findComentariesByTopic(
+      topic,
+      paginationDto,
+    );
   }
 
   @Patch(':id')

@@ -9,6 +9,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Commentary } from './entities/commentary.entity';
 import { Repository } from 'typeorm';
 import { AuthService } from 'src/auth/auth.service';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { Topics } from './enums/topics.enum';
 
 @Injectable()
 export class CommentariesService {
@@ -37,8 +39,23 @@ export class CommentariesService {
     };
   }
 
-  findComentariesByTopic(topic: string) {
-    return `This action returns a #${topic} commentary`;
+  async findComentariesByTopic(topic: string, paginationDto: PaginationDto) {
+    if (!Object.values(Topics).includes(topic as unknown as Topics))
+      throw new BadRequestException('Invalid topic');
+
+    const commentaries = await this.commentariesRepository.find({
+      where: { topic: topic as unknown as Topics },
+      relations: ['user'],
+      skip: paginationDto.offset,
+      take: paginationDto.limit,
+    });
+
+    return {
+      status: 200,
+      error: null,
+      success: true,
+      data: commentaries,
+    };
   }
 
   async updateComentary(
