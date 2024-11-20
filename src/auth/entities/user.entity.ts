@@ -1,7 +1,9 @@
+import { Commentary } from 'src/commentaries/entities/commentary.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -24,4 +26,7 @@ export class User {
 
   @CreateDateColumn()
   creationDate: Date;
+
+  @OneToMany(() => Commentary, (commentary) => commentary.user)
+  commentaries: Commentary[];
 }
