@@ -57,16 +57,27 @@ export class CommentariesController {
     );
   }
 
+  @Patch(':id/vote/up')
+  voteComentaryUp(
+    @Param('id') id: string,
+    @Headers('Authorization') jwt: string,
+  ) {
+    return this.commentariesService.voteComentaryUp(+id, jwt);
+  }
+
+  @Patch(':id/vote/down')
+  voteComentaryDown(
+    @Param('id') id: string,
+    @Headers('Authorization') jwt: string,
+  ) {
+    return this.commentariesService.voteComentaryDown(+id, jwt);
+  }
+
   @Delete(':id')
   removeComentary(
     @Param('id') id: string,
-    @Body() updateCommentaryDto: UpdateCommentaryDto,
     @Headers('Authorization') jwt: string,
   ) {
-    return this.commentariesService.removeComentary(
-      +id,
-      updateCommentaryDto,
-      jwt,
-    );
+    return this.commentariesService.removeComentary(+id, jwt);
   }
 }

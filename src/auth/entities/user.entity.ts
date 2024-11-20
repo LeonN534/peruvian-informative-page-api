@@ -1,3 +1,4 @@
+import { CommentariesVotedByUsers } from 'src/commentaries/entities/commentaries-voted-by-users.entity';
 import { Commentary } from 'src/commentaries/entities/commentary.entity';
 import {
   Column,
@@ -29,4 +30,10 @@ export class User {
 
   @OneToMany(() => Commentary, (commentary) => commentary.user)
   commentaries: Commentary[];
+
+  @OneToMany(
+    () => CommentariesVotedByUsers,
+    (commentariesVotedByUsers) => commentariesVotedByUsers.user,
+  )
+  public commentariesVotedByUsers: CommentariesVotedByUsers[];
 }

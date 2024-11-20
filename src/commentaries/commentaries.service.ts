@@ -11,6 +11,8 @@ import { Repository } from 'typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { Topics } from './enums/topics.enum';
+import { Votes } from './enums/votes.enum.';
+import { CommentariesVotedByUsers } from './entities/commentaries-voted-by-users.entity';
 
 @Injectable()
 export class CommentariesService {
@@ -18,6 +20,8 @@ export class CommentariesService {
     @InjectRepository(Commentary)
     private commentariesRepository: Repository<Commentary>,
     private readonly authService: AuthService,
+    @InjectRepository(CommentariesVotedByUsers)
+    private commentariesVotedByUsersRepository: Repository<CommentariesVotedByUsers>,
   ) {}
   async createComentary(
     createCommentaryDto: CreateCommentaryDto,
@@ -48,6 +52,7 @@ export class CommentariesService {
       relations: ['user'],
       skip: paginationDto.offset,
       take: paginationDto.limit,
+      order: { creationDate: 'DESC' },
     });
 
     return {
@@ -86,11 +91,7 @@ export class CommentariesService {
     };
   }
 
-  async removeComentary(
-    id: number,
-    updateCommentaryDto: UpdateCommentaryDto,
-    jwt: string,
-  ) {
+  async removeComentary(id: number, jwt: string) {
     if (!id) throw new BadRequestException('Commentary id is required');
 
     const user = await this.authService.getValidatedUser(jwt);
@@ -108,6 +109,87 @@ export class CommentariesService {
 
     return {
       status: 204,
+      error: null,
+      success: true,
+    };
+  }
+
+  async voteComentaryUp(id: number, jwt: string) {
+    if (!id) throw new BadRequestException('Commentary id is required');
+
+    const user = await this.authService.getValidatedUser(jwt);
+    const commentary = await this.commentariesRepository.findOne({
+      where: { id },
+    });
+
+    if (!commentary) throw new BadRequestException('Commentary not found');
+
+    const existingVote = commentary.commentariesVotedByUsers.find(
+      (vote) => vote.userId === user.id,
+    );
+
+    if (existingVote) {
+      if (existingVote.vote === Votes.UP)
+        throw new BadRequestException(
+          'You have already voted up this commentary',
+        );
+
+      // Update the vote to UP if the existing vote is not UP
+      existingVote.vote = Votes.UP;
+      await this.commentariesVotedByUsersRepository.save(existingVote);
+    } else {
+      const newCommentaryVote = new CommentariesVotedByUsers();
+      newCommentaryVote.user = user;
+      newCommentaryVote.commentary = commentary;
+      newCommentaryVote.vote = Votes.UP;
+      newCommentaryVote.userId = user.id;
+      newCommentaryVote.commentaryId = commentary.id;
+
+      await this.commentariesVotedByUsersRepository.save(newCommentaryVote);
+    }
+
+    return {
+      status: 200,
+      error: null,
+      success: true,
+    };
+  }
+
+  async voteComentaryDown(id: number, jwt: string) {
+    if (!id) throw new BadRequestException('Commentary id is required');
+
+    const user = await this.authService.getValidatedUser(jwt);
+    const commentary = await this.commentariesRepository.findOne({
+      where: { id },
+    });
+
+    if (!commentary) throw new BadRequestException('Commentary not found');
+    const existingVote = commentary.commentariesVotedByUsers.find(
+      (vote) => vote.userId === user.id,
+    );
+
+    if (existingVote) {
+      if (existingVote.vote === Votes.DOWN)
+        throw new BadRequestException(
+          'You have already voted down this commentary',
+        );
+
+      // Update the vote to Down if the existing vote is not DOWN
+      existingVote.vote = Votes.DOWN;
+      await this.commentariesVotedByUsersRepository.save(existingVote);
+    } else {
+      const newCommentaryVote = new CommentariesVotedByUsers();
+      newCommentaryVote.user = user;
+      newCommentaryVote.commentary = commentary;
+      newCommentaryVote.vote = Votes.DOWN;
+      newCommentaryVote.userId = user.id;
+      newCommentaryVote.commentaryId = commentary.id;
+
+      await this.commentariesVotedByUsersRepository.save(newCommentaryVote);
+    }
+
+    return {
+      status: 200,
       error: null,
       success: true,
     };

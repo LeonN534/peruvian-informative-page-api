@@ -3,10 +3,12 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Topics } from '../enums/topics.enum';
 import { User } from 'src/auth/entities/user.entity';
+import { CommentariesVotedByUsers } from './commentaries-voted-by-users.entity';
 
 @Entity()
 export class Commentary {
@@ -19,9 +21,6 @@ export class Commentary {
   @CreateDateColumn()
   creationDate: Date;
 
-  @Column('int', { default: 0 })
-  votes: number;
-
   @Column({
     type: 'enum',
     enum: Topics,
@@ -31,4 +30,11 @@ export class Commentary {
 
   @ManyToOne(() => User, (user) => user.commentaries)
   user: User;
+
+  @OneToMany(
+    () => CommentariesVotedByUsers,
+    (commentariesVotedByUsers) => commentariesVotedByUsers.commentary,
+    { eager: true },
+  )
+  public commentariesVotedByUsers: CommentariesVotedByUsers[];
 }
