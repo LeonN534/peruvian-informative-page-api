@@ -1,4 +1,4 @@
 export enum Topics {
-  SPORTS = 'sports',
-  POLITICS = 'politics',
+  DESCENTRALIZATION_PROCESS = 'descentralization-process',
+  ECONOMIC_STRUCTURE = 'economic-structure',
 }
