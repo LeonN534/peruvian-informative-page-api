@@ -50,6 +50,7 @@ export class AuthService {
     const newUser = this.userRepository.create({
       email: createUserDto.email,
       password: hash,
+      fullName: createUserDto.fullName,
     });
 
     try {

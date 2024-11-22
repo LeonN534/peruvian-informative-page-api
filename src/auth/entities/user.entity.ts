@@ -19,11 +19,8 @@ export class User {
   @Column('text', { select: false })
   password: string;
 
-  @Column('text', { default: 'Nuevo Usuario' })
-  fullName?: string;
-
-  @Column('text', { nullable: true })
-  photoUrl?: string;
+  @Column('text')
+  fullName: string;
 
   @CreateDateColumn()
   creationDate: Date;

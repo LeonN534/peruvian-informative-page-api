@@ -1,5 +1,6 @@
 import {
   IsEmail,
+  IsNotEmpty,
   IsString,
   Matches,
   MaxLength,
@@ -25,4 +26,9 @@ export class CreateUserDto {
   )
   @Trim()
   password: string;
+
+  @IsString()
+  @Trim()
+  @IsNotEmpty()
+  fullName: string;
 }

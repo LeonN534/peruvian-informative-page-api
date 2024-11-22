@@ -1,8 +1,12 @@
-import { IsNotEmpty, IsString } from 'class-validator';
-import { CreateUserDto } from './create-user.dto';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { Trim } from 'src/common/decorators/trim.decorator';
 
-export class LoginUserDto extends CreateUserDto {
+export class LoginUserDto {
+  @IsString()
+  @IsEmail()
+  @Trim()
+  email: string;
+
   @IsString()
   @Trim()
   @IsNotEmpty()
