@@ -34,7 +34,7 @@ export class Commentary {
   @OneToMany(
     () => CommentariesVotedByUsers,
     (commentariesVotedByUsers) => commentariesVotedByUsers.commentary,
-    { eager: true },
+    { eager: true, cascade: true },
   )
   public commentariesVotedByUsers: CommentariesVotedByUsers[];
 }

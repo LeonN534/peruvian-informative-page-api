@@ -129,10 +129,14 @@ export class CommentariesService {
     );
 
     if (existingVote) {
-      if (existingVote.vote === Votes.UP)
-        throw new BadRequestException(
-          'You have already voted up this commentary',
-        );
+      if (existingVote.vote === Votes.UP) {
+        await this.commentariesVotedByUsersRepository.remove(existingVote);
+        return {
+          status: 200,
+          error: null,
+          success: true,
+        };
+      }
 
       // Update the vote to UP if the existing vote is not UP
       existingVote.vote = Votes.UP;
@@ -169,10 +173,14 @@ export class CommentariesService {
     );
 
     if (existingVote) {
-      if (existingVote.vote === Votes.DOWN)
-        throw new BadRequestException(
-          'You have already voted down this commentary',
-        );
+      if (existingVote.vote === Votes.DOWN) {
+        await this.commentariesVotedByUsersRepository.remove(existingVote);
+        return {
+          status: 200,
+          error: null,
+          success: true,
+        };
+      }
 
       // Update the vote to Down if the existing vote is not DOWN
       existingVote.vote = Votes.DOWN;
